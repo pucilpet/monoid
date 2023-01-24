@@ -147,8 +147,6 @@ services:
     container_name: monoid-proxy
     networks:
       - monoid-network
-    ports:
-      - 8080:80
     image: monoidco/monoid-proxy:${VERSION}
 networks:
   monoid-network:
