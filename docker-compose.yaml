@@ -4,9 +4,6 @@ services:
     image: postgres:14.6-alpine3.16
     container_name: monoid-db
     restart: unless-stopped
-    environment:
-      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
-      - POSTGRES_USER=${DATABASE_USER}
     volumes:
       - db:/var/lib/postgresql/data
       - ./monoid-api/config-data/init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -29,8 +26,6 @@ services:
     environment:
       - DB=postgresql
       - DB_PORT=5432
-      - POSTGRES_USER=${DATABASE_USER}
-      - POSTGRES_PWD=${DATABASE_PASSWORD}
       - POSTGRES_SEEDS=monoid-db
       - DYNAMIC_CONFIG_FILE_PATH=config/dynamicconfig/development-sql.yaml
     image: temporalio/auto-setup:1.18.4
@@ -54,19 +49,11 @@ services:
   api:
     container_name: monoid-api
     environment:
-      - WEB_URL=${WEB_URL}
-      - DB_USER=${DATABASE_USER}
-      - DB_PASS=${DATABASE_PASSWORD}
       - DB_TCP_HOST=monoid-db
       - DB_PORT=5432
-      - DB_NAME=${DATABASE_NAME}
-      - ENCRYPTION_KEY=${ENCRYPTION_KEY}
       - TEMP_STORE_PATH=/tmp/monoid
-      - SEGMENT_KEY=${SEGMENT_KEY}
       - RESOURCE_PATH=/app/config-data/resources
-      - FILESTORE_PATH=${FILESTORE_PATH}
       - TEMPORAL=monoid-temporal:7233
-      - STORAGE_TYPE=${STORAGE_TYPE}
 
       # Uncomment these lines if you're using gcs
       # - GOOGLE_CLOUD_JSON=/gcloudcreds.json
@@ -92,13 +79,8 @@ services:
     container_name: monoid-loader
     command: /app/config-data
     environment:
-      - DB_USER=${DATABASE_USER}
-      - DB_PASS=${DATABASE_PASSWORD}
       - DB_TCP_HOST=monoid-db
       - DB_PORT=5432
-      - DB_NAME=${DATABASE_NAME}
-      - ENCRYPTION_KEY=${ENCRYPTION_KEY}
-      - SEGMENT_KEY=${SEGMENT_KEY}
     depends_on:
       db:
         condition: service_healthy
@@ -108,18 +90,10 @@ services:
   worker:
     container_name: monoid-worker
     environment:
-      - WEB_URL=${WEB_URL}
-      - DB_USER=${DATABASE_USER}
-      - DB_PASS=${DATABASE_PASSWORD}
       - DB_TCP_HOST=monoid-db
       - TEMP_STORE_PATH=/tmp/monoid
       - DB_PORT=5432
-      - DB_NAME=${DATABASE_NAME}
-      - ENCRYPTION_KEY=${ENCRYPTION_KEY}
-      - SEGMENT_KEY=${SEGMENT_KEY}
-      - FILESTORE_PATH=${FILESTORE_PATH}
       - TEMPORAL=monoid-temporal:7233
-      - STORAGE_TYPE=${STORAGE_TYPE}
       # Uncomment these lines if you're using gcs
       # - GOOGLE_CLOUD_JSON=/gcloudcreds.json
       # - GCS_BUCKET=${GCS_BUCKET}
