@@ -16,7 +16,7 @@ services:
       retries: 10
   web:
     container_name: monoid-web
-    image: monoidco/monoid-web:${VERSION}
+    image: monoidco/monoid-web:0.0.1
     networks:
       - monoid-network
   temporal:
@@ -67,11 +67,11 @@ services:
         condition: service_healthy
     networks:
       - monoid-network
-    image: monoidco/monoid-api:${VERSION}
+    image: monoidco/monoid-api:0.0.1
     volumes:
-      - filestore:${FILESTORE_PATH}
+      - filestore:/filestore
       - tempstore:/tmp/monoid
-      - ./monoid-config/resources:${RESOURCE_PATH}
+      - ./monoid-config/resources:/monoid_resources/
 
       # Uncomment this line if using gcs
       # - ${LOCAL_GOOGLE_CLOUD_JSON}:/gcloudcreds.json
@@ -86,7 +86,7 @@ services:
         condition: service_healthy
     networks:
       - monoid-network
-    image: monoidco/monoid-loader:${VERSION}
+    image: monoidco/monoid-loader:0.0.1
   worker:
     container_name: monoid-worker
     environment:
@@ -108,12 +108,12 @@ services:
       - monoid-network
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - filestore:${FILESTORE_PATH}
+      - filestore:/filestore
       - tempstore:/tmp/monoid
 
       # Uncomment this line if using gcs
       # - ${LOCAL_GOOGLE_CLOUD_JSON}:/gcloudcreds.json
-    image: monoidco/monoid-worker:${VERSION}
+    image: monoidco/monoid-worker:0.0.1
   proxy:
     depends_on:
       - web
@@ -121,7 +121,7 @@ services:
     container_name: monoid-proxy
     networks:
       - monoid-network
-    image: monoidco/monoid-proxy:${VERSION}
+    image: monoidco/monoid-proxy:0.0.1
 networks:
   monoid-network:
     driver: bridge
